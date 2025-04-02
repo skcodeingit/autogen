@@ -1,0 +1,123 @@
+
+PageLogger:
+  level: DEBUG  # DEBUG, INFO, WARNING, ERROR, CRITICAL, or NONE.
+  path: ./pagelogs/aime/gpt4o_baseline_25x
+
+client:
+  model: gpt-4o-2024-08-06  # gpt-4o-2024-05-13, gpt-4o-2024-08-06, gpt-4o-2024-11-20, o1-preview, o1, etc.
+  provider: trapi  # openai, azure_openai, or trapi
+  # api_key: sk-  # only for openai
+  temperature: 0.8
+  max_completion_tokens: 4096
+  presence_penalty: 0.0
+  frequency_penalty: 0.0
+  top_p: 1.0
+  max_retries: 65535
+
+Apprentice:
+  name_of_agent_or_team: AssistantAgent  # AssistantAgent or MagenticOneGroupChat
+  disable_prefix_caching: 1  # If true, prepends a small random string to the context, to decorrelate repeated runs.
+  MemoryController:
+    max_train_trials: 2  # 2-10
+    max_test_trials: 1  # 1-3
+    MemoryBank:
+      path: ./memory_bank/baseline
+      relevance_conversion_threshold: 1.7
+      n_results: 25
+      distance_threshold: 100
+
+evaluations:
+  - eval_function:
+      function_name: eval_without_learning
+      module_path: ./eval_functions/eval_without_learning.py
+      num_trials: 25  # 1-10
+    runs:
+      - task_file: data_files/tasks/aime/1/111.yaml  # 8
+      - task_file: data_files/tasks/aime/1/112.yaml  # 24
+      - task_file: data_files/tasks/aime/1/116.yaml  # 72
+      - task_file: data_files/tasks/aime/1/120.yaml  # 12
+      - task_file: data_files/tasks/aime/1/121.yaml  # 40
+      - task_file: data_files/tasks/aime/1/125.yaml  # 32
+      - task_file: data_files/tasks/aime/1/127.yaml  # 0
+      - task_file: data_files/tasks/aime/1/135.yaml  # 8
+      - task_file: data_files/tasks/aime/1/157.yaml  # 12
+      - task_file: data_files/tasks/aime/1/170.yaml  # 4
+      - task_file: data_files/tasks/aime/1/172.yaml  # 0
+      - task_file: data_files/tasks/aime/1/176.yaml  # 32
+      - task_file: data_files/tasks/aime/1/183.yaml  # 4
+      - task_file: data_files/tasks/aime/1/184.yaml  # 8
+      - task_file: data_files/tasks/aime/1/191.yaml  # 56
+      - task_file: data_files/tasks/aime/1/2.yaml    # 32
+      - task_file: data_files/tasks/aime/1/201.yaml  # 32
+      - task_file: data_files/tasks/aime/1/202.yaml  # 16
+      - task_file: data_files/tasks/aime/1/203.yaml  # 4
+      - task_file: data_files/tasks/aime/1/209.yaml  # 92
+      - task_file: data_files/tasks/aime/1/223.yaml  # 0
+      - task_file: data_files/tasks/aime/1/225.yaml  # 4
+      - task_file: data_files/tasks/aime/1/23.yaml   # 12
+      - task_file: data_files/tasks/aime/1/232.yaml  # 4
+      - task_file: data_files/tasks/aime/1/25.yaml   # 40
+      - task_file: data_files/tasks/aime/1/251.yaml  # 0
+      - task_file: data_files/tasks/aime/1/267.yaml  # 68
+      - task_file: data_files/tasks/aime/1/268.yaml  # 20
+      - task_file: data_files/tasks/aime/1/295.yaml  # 32
+      - task_file: data_files/tasks/aime/1/3.yaml    # 32
+      - task_file: data_files/tasks/aime/1/312.yaml  # 4
+      - task_file: data_files/tasks/aime/1/313.yaml  # 0
+      - task_file: data_files/tasks/aime/1/316.yaml  # 16
+      - task_file: data_files/tasks/aime/1/33.yaml   # 0
+      - task_file: data_files/tasks/aime/1/330.yaml  # 0
+      - task_file: data_files/tasks/aime/1/335.yaml  # 28
+      - task_file: data_files/tasks/aime/1/340.yaml  # 0
+      - task_file: data_files/tasks/aime/1/355.yaml  # 0
+      - task_file: data_files/tasks/aime/1/360.yaml  # 0
+      - task_file: data_files/tasks/aime/1/372.yaml  # 0
+      - task_file: data_files/tasks/aime/1/394.yaml  # 12
+      - task_file: data_files/tasks/aime/1/409.yaml  # 72
+      - task_file: data_files/tasks/aime/1/42.yaml   # 4
+      - task_file: data_files/tasks/aime/1/421.yaml  # 0
+      - task_file: data_files/tasks/aime/1/424.yaml  # 24
+      - task_file: data_files/tasks/aime/1/428.yaml  # 0
+      - task_file: data_files/tasks/aime/1/439.yaml  # 44
+      - task_file: data_files/tasks/aime/1/440.yaml  # 4
+      - task_file: data_files/tasks/aime/1/441.yaml  # 4
+      - task_file: data_files/tasks/aime/1/447.yaml  # 8
+      - task_file: data_files/tasks/aime/1/468.yaml  # 8
+      - task_file: data_files/tasks/aime/1/47.yaml   # 60
+      - task_file: data_files/tasks/aime/1/480.yaml  # 100
+      - task_file: data_files/tasks/aime/1/484.yaml  # 4
+      - task_file: data_files/tasks/aime/1/496.yaml  # 16
+      - task_file: data_files/tasks/aime/1/511.yaml  # 52
+      - task_file: data_files/tasks/aime/1/514.yaml  # 0
+      - task_file: data_files/tasks/aime/1/527.yaml  # 84
+      - task_file: data_files/tasks/aime/1/536.yaml  # 16
+      - task_file: data_files/tasks/aime/1/541.yaml  # 24
+      - task_file: data_files/tasks/aime/1/551.yaml  # 0
+      - task_file: data_files/tasks/aime/1/556.yaml  # 8
+      - task_file: data_files/tasks/aime/1/566.yaml  # 76
+      - task_file: data_files/tasks/aime/1/581.yaml  # 0
+      - task_file: data_files/tasks/aime/1/586.yaml  # 0
+      - task_file: data_files/tasks/aime/1/587.yaml  # 0
+      - task_file: data_files/tasks/aime/1/592.yaml  # 8
+      - task_file: data_files/tasks/aime/1/597.yaml  # 44
+      - task_file: data_files/tasks/aime/1/625.yaml  # 4
+      - task_file: data_files/tasks/aime/1/626.yaml  # 20
+      - task_file: data_files/tasks/aime/1/650.yaml  # 28
+      - task_file: data_files/tasks/aime/1/652.yaml  # 96
+      - task_file: data_files/tasks/aime/1/683.yaml  # 16
+      - task_file: data_files/tasks/aime/1/684.yaml  # 52
+      - task_file: data_files/tasks/aime/1/713.yaml  # 8
+      - task_file: data_files/tasks/aime/1/714.yaml  # 12
+      - task_file: data_files/tasks/aime/1/719.yaml  # 0
+      - task_file: data_files/tasks/aime/1/727.yaml  # 0
+      - task_file: data_files/tasks/aime/1/755.yaml  # 12
+      - task_file: data_files/tasks/aime/1/784.yaml  # 0
+      - task_file: data_files/tasks/aime/1/79.yaml   # 60
+      - task_file: data_files/tasks/aime/1/802.yaml  # 52
+      - task_file: data_files/tasks/aime/1/84.yaml   # 40
+      - task_file: data_files/tasks/aime/1/860.yaml  # 80
+      - task_file: data_files/tasks/aime/1/90.yaml   # 0
+      - task_file: data_files/tasks/aime/1/908.yaml  # 0
+      - task_file: data_files/tasks/aime/1/91.yaml   # 20
+      - task_file: data_files/tasks/aime/1/922.yaml  # 0
+      - task_file: data_files/tasks/aime/1/96.yaml   # 28

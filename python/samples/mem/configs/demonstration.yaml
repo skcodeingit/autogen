@@ -14,7 +14,7 @@ client:
 
 Apprentice:
   name_of_agent_or_team: AssistantAgent  # AssistantAgent or MagenticOneGroupChat
-  disable_prefix_caching: 1  # If true, prepends a small random string to the context, to decorrelate repeated runs.
+  disable_prefix_caching: 0  # If true, prepends a small random string to the context, to decorrelate repeated runs.
   MemoryController:
     max_train_trials: 10
     max_test_trials: 3

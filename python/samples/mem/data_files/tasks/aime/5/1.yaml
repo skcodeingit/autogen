@@ -1,0 +1,5 @@
+task_description: 'Let $f(x)=|x-p|+|x-15|+|x-p-15|$ , where $0 < p < 15$ . Determine
+  the minimum value taken by $f(x)$ for $x$ in the interval $p \leq x\leq15$ .
+
+  (The answer is an integer from 0 to 999 inclusive.)'
+expected_answer: '15'
