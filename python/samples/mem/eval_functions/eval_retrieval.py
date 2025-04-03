@@ -1,5 +1,6 @@
 from typing import Any, Dict, Set
 import yaml
+import time
 
 from autogen_core.models import (
     ChatCompletionClient,
@@ -14,6 +15,7 @@ async def eval_retrieval(memory_controller: MemoryController, client: ChatComple
     Evaluates precision and recall of task-centric memory retrieval.
     """
     logger.enter_function()
+    start_time = time.time()
 
     # Load the specified data.
     task_files = run_dict["tasks"]
@@ -62,13 +64,25 @@ async def eval_retrieval(memory_controller: MemoryController, client: ChatComple
     logger.info("\nNum relevant:   {}".format(num_relevant))
     logger.info("\nNum relevant and retrieved:  {}".format(num_relevant_and_retrieved))
 
-    # Compute precision and recall as percentages.
+    # Compute metrics.
     precision = num_relevant_and_retrieved / num_retrieved if num_retrieved > 0 else 0
     recall = num_relevant_and_retrieved / num_relevant if num_relevant > 0 else 0
+    f1 = 2 * (precision * recall) / (precision + recall) if precision + recall > 0 else 0
+    end_time = time.time()
+    time_spent = end_time - start_time
+
     precision_str = "Precision:  {:.3f}%".format(precision * 100)
     recall_str = "Recall:     {:.3f}%".format(recall * 100)
+    f1_str = "F1:         {:.3f}%".format(f1 * 100)
+    time_str = "Time:       {:.3f} seconds".format(time_spent)
+
     logger.info("\n" + precision_str)
     logger.info("\n" + recall_str)
+    logger.info("\n" + f1_str)
+    logger.info("\n" + time_str)
+
 
     logger.leave_function()
-    return "\neval_retrieval\n" + precision_str + "\n" + recall_str
+    multiline_str = "\neval_retrieval\n" + precision_str + "\n" + recall_str + "\n" + f1_str + "\n" + time_str
+    singleline_str = "{:.3f} {:.3f} {:.3f} {:.3f}".format(precision, recall, f1, time_spent)
+    return multiline_str + "\n" + singleline_str
