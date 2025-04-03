@@ -4,6 +4,7 @@ import sys
 import yaml
 
 from autogen_ext.experimental.task_centric_memory.utils import PageLogger, Apprentice
+from autogen_ext.experimental.task_centric_memory import MemoryController
 from clients._client_creator import ClientCreator
 
 
@@ -17,12 +18,35 @@ async def perform_evaluations(config, logger) -> None:
     client_creator = ClientCreator(config=config["client"], logger=logger)
     client = client_creator.create_client()
 
-    # Create the apprentice.
-    apprentice_config = config["Apprentice"]
-    apprentice = Apprentice(
-        client=client,
-        config=apprentice_config,
-        logger=logger)
+    # Does config contain an Apprentice section?
+    if "Apprentice" in config:
+        # Create the apprentice.
+        apprentice_config = config["Apprentice"]
+        apprentice = Apprentice(
+            client=client,
+            config=apprentice_config,
+            logger=logger)
+    else:
+        apprentice = None
+
+    # Does config contain a MemoryController section?
+    if "MemoryController" in config:
+        # Create the memory controller.
+        memory_controller_config = config["MemoryController"]
+        memory_controller = MemoryController(
+            reset=True,
+            config=memory_controller_config,
+            task_assignment_callback=None,
+            client=client,
+            logger=logger)
+    else:
+        memory_controller = None
+
+    # Make sure we have one or the other, but not both.
+    if apprentice is not None and memory_controller is not None:
+        raise ValueError("Cannot have both Apprentice and MemoryController in the config.")
+    if apprentice is None and memory_controller is None:
+        raise ValueError("Must have either Apprentice or MemoryController in the config.")
 
     # Execute each evaluation.
     for evaluation_config in config["evaluations"]:
@@ -49,7 +73,10 @@ async def perform_evaluations(config, logger) -> None:
 
         # Call the eval function for each listed run.
         for run_dict in evaluation_config["runs"]:
-            results = await eval_function(apprentice, client, logger, function_config, run_dict)
+            if apprentice is not None:
+                results = await eval_function(apprentice, client, logger, function_config, run_dict)
+            else:
+                results = await eval_function(memory_controller, client, logger, function_config, run_dict)
             print(results)
 
     if hasattr(client, "finalize"):

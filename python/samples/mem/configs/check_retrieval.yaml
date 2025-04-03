@@ -1,0 +1,48 @@
+
+PageLogger:
+  level: DEBUG  # DEBUG, INFO, WARNING, ERROR, CRITICAL, or NONE.
+  path: ./pagelogs/retrieval
+
+client:
+  model: gpt-4o-2024-08-06
+  provider: trapi  # openai, azure_openai, or trapi
+  # api_key: sk-  # only for openai
+  temperature: 0.8
+  max_completion_tokens: 4096
+  presence_penalty: 0.0
+  frequency_penalty: 0.0
+  top_p: 1.0
+  max_retries: 65535
+  ChatCompletionClientRecorder:  # Provides record & replay functionality
+    enabled: 1  # Only works for AssistantAgent currently
+    mode: replay  # record, replay, or pass to use the client without ChatCompletionClientRecorder
+    session_name: ./sessions/retrieval/session.json
+
+MemoryController:
+  MemoryBank:
+    path: ./memory_bank/retrieval
+    relevance_conversion_threshold: 1.7
+    n_results: 25
+    distance_threshold: 100
+
+evaluations:
+  - eval_function:
+      function_name: eval_retrieval
+      module_path: ./eval_functions/eval_retrieval.py
+    runs:
+      - tasks:
+          - data_files/tasks/10_liars.yaml
+          - data_files/tasks/100_vampires.yaml
+          - data_files/tasks/autogen_package.yaml
+          - data_files/tasks/cell_towers_1.yaml
+          - data_files/tasks/cell_towers_2.yaml
+        insights:
+          - data_files/insights/add_topic.yaml
+          - data_files/insights/cell_towers_2_demo.yaml
+          - data_files/insights/liar_advice.yaml
+        task_insight_relevance:  # Rows and columns represent (respectively) the tasks and insights listed above.
+          - [0, 0, 2]  # 2 denotes a mutually relevant task-insight pair, stored in memory.
+          - [0, 0, 1]  # 1 denotes a mutually relevant task-insight pair, not stored in memory.
+          - [2, 0, 0]  # 0 denotes a mutually irrelevant task-insight pair.
+          - [0, 1, 0]
+          - [0, 2, 0]

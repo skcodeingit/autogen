@@ -30,10 +30,6 @@ Apprentice:
       n_results: 25
       distance_threshold: 100
 
-test:
-  task_file: data_files/tasks/autogen_package.yaml  # The task being tested.
-  insight_file: data_files/insights/add_topic.yaml  # Advice provided to help solve the task.
-
 evaluations:
   - eval_function:
       function_name: eval_teachability
