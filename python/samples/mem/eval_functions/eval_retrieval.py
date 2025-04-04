@@ -15,7 +15,6 @@ async def eval_retrieval(memory_controller: MemoryController, client: ChatComple
     Evaluates precision and recall of task-centric memory retrieval.
     """
     logger.enter_function()
-    start_time = time.time()
 
     # Load the specified data.
     task_files = run_dict["tasks"]
@@ -36,18 +35,25 @@ async def eval_retrieval(memory_controller: MemoryController, client: ChatComple
 
     # Clear memory, then store the specified task-insight pairs.
     memory_controller.reset_memory()
+    start_storage_time = time.time()
+    num_memos_stored = 0
     for ti, task in enumerate(task_list):
         for ii, insight in enumerate(insight_list):
             if task_insight_relevance[ti][ii] == 2:
                 await memory_controller.add_memo(task=task, insight=insight)
+                num_memos_stored += 1
+    total_storage_time = time.time() - start_storage_time
 
     # Test memory retrieval.
+    start_retrieval_time = time.time()
+    num_retrievals = 0
     num_retrieved = 0
     num_relevant = 0
     num_relevant_and_retrieved = 0
     for ti, task in enumerate(task_list):
         # Retrieve insights for this task.
         memos = await memory_controller.retrieve_relevant_memos(task=task)
+        num_retrievals += 1
         set_of_retrieved_insights = set(memo.insight for memo in memos)
 
         # Gather the insights that are relevant to this task according to ground truth.
@@ -60,6 +66,7 @@ async def eval_retrieval(memory_controller: MemoryController, client: ChatComple
         num_retrieved += len(set_of_retrieved_insights)
         num_relevant += len(set_of_relevant_insights)
         num_relevant_and_retrieved += len(set_of_relevant_insights & set_of_retrieved_insights)
+    total_retrieval_time = time.time() - start_retrieval_time
     logger.info("\nNum retrieved:  {}".format(num_retrieved))
     logger.info("\nNum relevant:   {}".format(num_relevant))
     logger.info("\nNum relevant and retrieved:  {}".format(num_relevant_and_retrieved))
@@ -68,21 +75,22 @@ async def eval_retrieval(memory_controller: MemoryController, client: ChatComple
     precision = num_relevant_and_retrieved / num_retrieved if num_retrieved > 0 else 0
     recall = num_relevant_and_retrieved / num_relevant if num_relevant > 0 else 0
     f1 = 2 * (precision * recall) / (precision + recall) if precision + recall > 0 else 0
-    end_time = time.time()
-    time_spent = end_time - start_time
+    time_per_storage = total_storage_time / num_memos_stored if num_memos_stored > 0 else 0
+    time_per_retrieval = total_retrieval_time / num_retrievals if num_retrievals > 0 else 0
 
-    precision_str = "Precision:  {:.3f}%".format(precision * 100)
-    recall_str = "Recall:     {:.3f}%".format(recall * 100)
-    f1_str = "F1:         {:.3f}%".format(f1 * 100)
-    time_str = "Time:       {:.3f} seconds".format(time_spent)
+    precision_str = "Precision:  {:.3f}".format(precision)
+    recall_str = "Recall:     {:.3f}".format(recall)
+    f1_str = "F1:         {:.3f}".format(f1)
+    time_per_storage_str = "Time per storage:  {:.3f} seconds".format(time_per_storage)
+    time_per_retrieval_str = "Time per retrieval:  {:.3f} seconds".format(time_per_retrieval)
 
     logger.info("\n" + precision_str)
     logger.info("\n" + recall_str)
     logger.info("\n" + f1_str)
-    logger.info("\n" + time_str)
-
+    logger.info("\n" + time_per_storage_str)
+    logger.info("\n" + time_per_retrieval_str)
 
     logger.leave_function()
-    multiline_str = "\neval_retrieval\n" + precision_str + "\n" + recall_str + "\n" + f1_str + "\n" + time_str
-    singleline_str = "{:.3f} {:.3f} {:.3f} {:.3f}".format(precision, recall, f1, time_spent)
+    multiline_str = "\neval_retrieval\n" + precision_str + "\n" + recall_str + "\n" + f1_str + "\n" + time_per_storage_str + "\n" + time_per_retrieval_str
+    singleline_str = "{:.3f} {:.3f} {:.3f} {:.3f} {:.3f}".format(precision, recall, f1, time_per_storage, time_per_retrieval)
     return multiline_str + "\n" + singleline_str
