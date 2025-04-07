@@ -1,7 +1,7 @@
 
 PageLogger:
   level: DEBUG  # DEBUG, INFO, WARNING, ERROR, CRITICAL, or NONE.
-  path: ./pagelogs/self-teaching
+  path: ./pagelogs/self_teaching
 
 client:
   model: gpt-4o-2024-08-06
@@ -13,31 +13,29 @@ client:
   frequency_penalty: 0.0
   top_p: 1.0
   max_retries: 65535
+  ChatCompletionClientRecorder:  # Provides record & replay functionality
+    enabled: 1  # Only works for AssistantAgent currently
+    mode: replay  # record, replay, or pass to use the client without ChatCompletionClientRecorder
+    session_name: ./sessions/self_teaching/session.json
 
 Apprentice:
   name_of_agent_or_team: AssistantAgent  # AssistantAgent or MagenticOneGroupChat
   disable_prefix_caching: 0  # If true, prepends a small random string to the context, to decorrelate repeated runs.
   MemoryController:
-    max_train_trials: 10  # 2-10
-    max_test_trials: 3  # 1-3
+    max_train_trials: 2  # 2-10
+    max_test_trials: 1  # 1-3
     MemoryBank:
       path: ./memory_bank/self_teaching
       relevance_conversion_threshold: 1.7
       n_results: 25
       distance_threshold: 100
 
-test:
-  task_file_1: data_files/tasks/10_liars.yaml  # Train and test on this task.
-  task_file_2: data_files/tasks/100_vampires.yaml  # Test generalization on this different, similar task.
-  num_loops: 2  # 1-10
-  num_final_test_trials: 3  # 1-3
-
 evaluations:
   - eval_function:
       function_name: eval_self_teaching
       module_path: ./eval_functions/eval_self_teaching.py
-      num_loops: 2  # 1-10
-      num_final_test_trials: 3  # 1-3
+      num_loops: 1  # 1-10
+      num_final_test_trials: 1  # 1-3
     runs:
       - task_file_1: data_files/tasks/10_liars.yaml  # Train and test on this task.
         task_file_2: data_files/tasks/100_vampires.yaml  # Test generalization on this different, similar task.
