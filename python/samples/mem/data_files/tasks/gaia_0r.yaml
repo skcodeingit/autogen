@@ -1,0 +1,5 @@
+# From GAIA L1
+
+task_description: What is the IOC country code of the country sending the fewest athletes to the Summer Olympics of 1928? In case of a tie, choose the first alphabetically.
+
+expected_answer: CUB

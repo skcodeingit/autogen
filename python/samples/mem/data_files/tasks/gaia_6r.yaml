@@ -1,0 +1,5 @@
+# From GAIA L1
+
+task_description: From the following items, create a comma-separated, alphabetical list of vegetables, taking care to exclude any botanical fruits - peanuts, lettuce, zucchini, celery, broccoli, acorns, whole allspice, bell pepper, corn, rice, green beans, plums, fresh basil, sweet potatoes, Oreos, whole bean coffee, flour, eggs, milk.
+
+expected_answer: broccoli, celery, fresh basil, lettuce, sweet potatoes

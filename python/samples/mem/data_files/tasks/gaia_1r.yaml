@@ -1,0 +1,5 @@
+# From GAIA L1
+
+task_description: How long (in thousands of hours) would it take Eliud Kipchoge to run as far as the minimum distance between the Moon and the Earth (according to Wikipedia), if he could keep running at the same pace as he did in his record-making marathon? Round the final number to the nearest 1000 hours, and don't use commas.
+
+expected_answer: 17

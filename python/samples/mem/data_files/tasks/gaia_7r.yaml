@@ -1,0 +1,5 @@
+# From GAIA L1
+
+task_description: Consult the website of Cornell Law School's legal information institute to find the fifth section of federal rules alphabetically. Then determine which article (as of 2021) has \"witnesses\" in the most titles. Finally, look at the last amendment to the first rule in this article, and report the word that it deleted.
+
+expected_answer: inference
