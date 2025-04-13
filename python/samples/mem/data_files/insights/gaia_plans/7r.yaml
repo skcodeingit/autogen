@@ -1,0 +1,10 @@
+insight: '{"task": null, "steps": [{"title": "Identify the fifth section of federal
+  rules alphabetically on Cornell Law School''s website", "details": "Search the Cornell
+  Law School Legal Information Institute''s website for a list of federal rules and
+  identify which section is fifth in alphabetical order."}, {"title": "Locate the
+  article with the most titles containing ''witnesses'' under the identified section",
+  "details": "Within the identified fifth section, search for articles that contain
+  ''witnesses'' in their titles and determine which has the most titles containing
+  the word."}, {"title": "Check the last amendment of the first rule in the article
+  found", "details": "Review the amendments made to the first rule in the identified
+  article and find the word deleted in the last amendment as of 2021."}]}'

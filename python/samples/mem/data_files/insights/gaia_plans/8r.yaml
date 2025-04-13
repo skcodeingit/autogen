@@ -1,0 +1,12 @@
+insight: '{"task": null, "steps": [{"title": "Identify the TV show hosted by Ali Khan
+  that started in 2015", "details": "Search for the TV show that Ali Khan started
+  in 2015, which focuses on cost-conscious dining."}, {"title": "Locate the episode
+  where Ali Khan enjoyed a New Mexican staple", "details": "Find the specific episode
+  of the identified TV show where Ali Khan enjoyed a New Mexican staple, and note
+  the restaurant featured in that episode."}, {"title": "Identify the book linked
+  to the restaurant recommended by two James Beard Award winners", "details": "Search
+  for any books that might have recommended the restaurant identified in the episode,
+  noting especially those where two James Beard Award winners are mentioned."}, {"title":
+  "Find the complete title of the book and write numbers in plain text", "details":
+  "Once the book is identified, record the complete title, ensuring any numerical
+  values are written out in plain text."}]}'

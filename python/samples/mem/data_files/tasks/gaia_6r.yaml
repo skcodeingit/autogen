@@ -1,5 +1,5 @@
 # From GAIA L1
 
-task_description: From the following items, create a comma-separated, alphabetical list of vegetables, taking care to exclude any botanical fruits - peanuts, lettuce, zucchini, celery, broccoli, acorns, whole allspice, bell pepper, corn, rice, green beans, plums, fresh basil, sweet potatoes, Oreos, whole bean coffee, flour, eggs, milk.
+task_description: One of the sons of Hreidmar, who guarded his house, had a journal named after him. In 2014 this journal published and article by Emily Midkiff, in which a word quoted from two authors expressed distaste for how dragons were depicted. What was that word?
 
-expected_answer: broccoli, celery, fresh basil, lettuce, sweet potatoes
+expected_answer: fluffy

@@ -1,0 +1,9 @@
+insight: '{"task": null, "steps": [{"title": "Find data on the number of athletes
+  each country sent to the 1928 Summer Olympics", "details": "1) Perform a web search
+  to find a list of countries and the number of athletes each sent to the 1928 Summer
+  Olympics. 2) Gather the data and identify the country that sent the fewest athletes.
+  3) Handle cases where there are ties by choosing the country that comes first in
+  alphabetical order."}, {"title": "Retrieve and report the IOC code of the identified
+  country", "details": "Identify the IOC code for the country that had the least number
+  of athletes at the 1928 Summer Olympics from the gathered data in the previous step
+  and report the IOC code."}]}'

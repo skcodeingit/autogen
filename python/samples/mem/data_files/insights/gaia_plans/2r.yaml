@@ -1,0 +1,8 @@
+insight: '{"task": null, "steps": [{"title": "Identify authors of the paper", "details":
+  "Perform a web search to find the list of authors of the paper titled \"Pie Menus
+  or Linear Menus, Which Is Better?\" published in 2015."}, {"title": "Determine authors
+  with prior publications", "details": "For each author identified in the previous
+  step, perform a citation search to check their publication history and identify
+  the author who has prior publications."}, {"title": "Find the first paper of the
+  relevant author", "details": "After determining which author has prior publications,
+  search for the earliest paper authored by that person."}]}'
