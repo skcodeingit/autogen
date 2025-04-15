@@ -1,3 +1,4 @@
+import os
 from typing import Any, Dict, Set
 import yaml
 import time
@@ -17,23 +18,31 @@ async def eval_retrieval_2(memory_controller: MemoryController, client: ChatComp
     logger.enter_function()
 
     # Load the specified data.
-    # task_files = run_dict["tasks"]
-    # task_list = []
-    # for task_file in task_files:
-    #     with open(task_file, "r") as file:
-    #         task = yaml.load(file, Loader=yaml.FullLoader)
-    #         task_list.append(task["task_description"])
-    #
-    # insight_files = run_dict["insights"]
-    # insight_list = []
-    # for insight_file in insight_files:
-    #     with open(insight_file, "r") as file:
-    #         insight = yaml.load(file, Loader=yaml.FullLoader)
-    #         insight_list.append(insight["insight"])
-    #
-    # task_insight_relevance = run_dict["task_insight_relevance"]
+    query_task_files = run_dict["query_tasks"]
+    query_task_list = []
+    for query_task_file in query_task_files:
+        with open(query_task_file, "r") as file:
+            query_task = yaml.load(file, Loader=yaml.FullLoader)
+            query_task_list.append(query_task["task_description"])
 
-    task_pairs = run_dict["task_pairs"]  # List of tuples (task to store, task to retrieve)
+    stored_task_files = run_dict["tasks_to_store"]
+    stored_task_list = []
+    for stored_task_file in stored_task_files:
+        with open(stored_task_file, "r") as file:
+            stored_task = yaml.load(file, Loader=yaml.FullLoader)
+            stored_task_list.append(stored_task["task_description"])
+
+    insight_files = run_dict["insights"]
+    insight_list = []
+    for insight_file in insight_files:
+        with open(insight_file, "r") as file:
+            insight = yaml.load(file, Loader=yaml.FullLoader)
+            insight_list.append(insight["insight"])
+
+    # Make sure the number of tasks and insights match.
+    num_tasks = len(query_task_list)
+    assert num_tasks == len(stored_task_list), "Number of query and stored tasks must match."
+    assert num_tasks == len(insight_list), "Number of tasks and insights must match."
 
     # Load the current partition index.
     with open(run_dict["partition_index_filename"], "r") as file:
@@ -47,6 +56,13 @@ async def eval_retrieval_2(memory_controller: MemoryController, client: ChatComp
         partition_index = partition_index % num_partitions
         partition = partitions[partition_index].strip()
         logger.info(f"Partition: {partition}")
+        assert len(partition) == num_tasks, "Partition length must match number of tasks."
+
+    # Read the output filename, and make sure its directory exists.
+    output_filename = run_dict["output_filename"]
+    output_dir = output_filename.rsplit("/", 1)[0]
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
 
     # Clear the counters.
     num_memos_stored = 0
@@ -56,6 +72,8 @@ async def eval_retrieval_2(memory_controller: MemoryController, client: ChatComp
     num_relevant_and_retrieved = 0
     total_storage_time = 0.
     total_retrieval_time = 0.
+    retrieval_time_for_existing_plans = 0.  # Whether any plan was retrieved or not.
+    retrieval_time_for_missing_plans = 0.   # Whether any plan was retrieved or not.
 
     # Loop over each side of the partition, storing the corresponding half of the tasks in memory each time.
     for side_i in range(2):
@@ -65,49 +83,53 @@ async def eval_retrieval_2(memory_controller: MemoryController, client: ChatComp
         # Clear memory, then store the tasks specified by the partition.
         memory_controller.reset_memory()
         start_storage_time = time.time()
-        for ti, task_pair in enumerate(task_pairs):
-            if partition[ti] == storage_flag:
-                # Store the first task in the pair, using the pair index as the insight to be retrieved later.
-                with open(task_pair[0], "r") as file:
-                    task_to_store = yaml.load(file, Loader=yaml.FullLoader)["task_description"]
-                await memory_controller.add_memo(task=task_to_store, insight=str(ti), index_on_both=False)
+        for i in range(num_tasks):
+            if partition[i] == storage_flag:
+                await memory_controller.add_memo(task=stored_task_list[i], insight=insight_list[i], index_on_both=False)
                 num_memos_stored += 1
+                logger.info(f"Stored task: {stored_task_list[i]}")
+                logger.info(f"Stored insight: {insight_list[i]}")
         total_storage_time += time.time() - start_storage_time
 
         # Test memory retrieval.
-        start_retrieval_time = time.time()
-        for ti, task_pair in enumerate(task_pairs):
-            # Retrieve insights for the second task in the pair.
-            query_task_file = task_pair[1]
-            with open(query_task_file, "r") as file:
-                query_task = yaml.load(file, Loader=yaml.FullLoader)["task_description"]
+        for i in range(num_tasks):
+            query_task = query_task_list[i]
+            logger.info(f"\nQuery task: {query_task}")
+            plan_was_stored = (partition[i] == storage_flag)
+            logger.info(f"Was a corresponding plan stored?  {plan_was_stored}")
+
+            # Time the retrieval operation.
+            start_retrieval_time = time.time()
             memos = await memory_controller.retrieve_relevant_memos(task=query_task)
+            retrieval_time = time.time() - start_retrieval_time
+            total_retrieval_time += retrieval_time
+            if plan_was_stored:
+                retrieval_time_for_existing_plans += retrieval_time
+            else:
+                retrieval_time_for_missing_plans += retrieval_time
+
             assert len(memos) <= 1, "No more than one memo should be retrieved."
             num_retrieval_operations += 1
-            # set_of_retrieved_insights = set(memo.insight for memo in memos)
-
-            # Gather the insights that are relevant to this task according to ground truth.
-            # set_of_relevant_insights: Set[str] = set()
-            # for ii, insight in enumerate(insight_list):
-            #     if task_insight_relevance[ti][ii] > 0:
-            #         set_of_relevant_insights.add(insight)
 
             # Accumulate the counts.
-            query_task_should_be_found = (partition[ti] == storage_flag)
-            if query_task_should_be_found:
+            if plan_was_stored:
                 num_relevant += 1
-                logger.info(f"This query task should be found.")
-            if len(memos) == 1:
+                logger.info(f"A similar task was stored.")
+            else:
+                logger.info(f"No similar task was stored.")
+            if len(memos) > 0:
                 num_retrieved += 1
-                memo = memos[0]
-                if memo.insight == str(ti):
-                    num_relevant_and_retrieved += 1
-                    logger.info(f"This query task was found.")
-
-            # num_retrieved += len(set_of_retrieved_insights)
-            # num_relevant += len(set_of_relevant_insights)
-            # num_relevant_and_retrieved += len(set_of_relevant_insights & set_of_retrieved_insights)
-        total_retrieval_time += time.time() - start_retrieval_time
+                logger.info(f"Insight retrieved: {memos[0].insight}")
+                if plan_was_stored:
+                    if memos[0].insight == insight_list[i]:
+                        num_relevant_and_retrieved += 1
+                        logger.info(f"Correct plan retrieved.")
+                    else:
+                        logger.info(f"Erroneous retrieval (wrong plan).")
+                else:
+                    logger.info(f"Erroneous retrieval (nothing should have been found).")
+            else:
+                logger.info(f"No insight was retrieved.")
 
     logger.info(f"\nNumber of memos stored: {num_memos_stored}")
     logger.info("\nNum retrieved:  {}".format(num_retrieved))
@@ -120,6 +142,8 @@ async def eval_retrieval_2(memory_controller: MemoryController, client: ChatComp
     f1 = 2 * (precision * recall) / (precision + recall) if precision + recall > 0 else 0
     time_per_storage = total_storage_time / num_memos_stored if num_memos_stored > 0 else 0
     time_per_retrieval = total_retrieval_time / num_retrieval_operations if num_retrieval_operations > 0 else 0
+    retrieval_time_for_existing_plans = retrieval_time_for_existing_plans / (num_retrieval_operations/2) if num_retrieval_operations > 0 else 0
+    retrieval_time_for_missing_plans = retrieval_time_for_missing_plans / (num_retrieval_operations/2) if num_retrieval_operations > 0 else 0
 
     precision_str = "Precision:  {:.3f}".format(precision)
     recall_str = "Recall:     {:.3f}".format(recall)
@@ -132,12 +156,39 @@ async def eval_retrieval_2(memory_controller: MemoryController, client: ChatComp
     logger.info("\n" + f1_str)
     logger.info("\n" + time_per_storage_str)
     logger.info("\n" + time_per_retrieval_str)
-
+    logger.info("\nRetrieval time for existing plans:  {:.3f}".format(retrieval_time_for_existing_plans))
+    logger.info("\nRetrieval time for missing plans:  {:.3f}".format(retrieval_time_for_missing_plans))
     logger.leave_function()
-    multiline_str = "\neval_retrieval\n" + precision_str + "\n" + recall_str + "\n" + f1_str + "\n" + time_per_storage_str + "\n" + time_per_retrieval_str
-    singleline_str = "{} {:.3f} {:.3f} {:.3f} {:.3f} {:.3f}".format(partition_index, precision, recall, f1, time_per_storage, time_per_retrieval)
+
+    multiline_str = ""
+    multiline_str += "\npartition_index: {}".format(partition_index)
+    multiline_str += "\npartition: {}".format(partition)
+    multiline_str += "\nnum_relevant: {}".format(num_relevant)
+    multiline_str += "\nnum_retrieved: {}".format(num_retrieved)
+    multiline_str += "\nnum_relevant_and_retrieved: {}".format(num_relevant_and_retrieved)
+    multiline_str += "\nprecision: {:.3f}".format(precision)
+    multiline_str += "\nrecall: {:.3f}".format(recall)
+    multiline_str += "\nf1: {:.3f}".format(f1)
+    multiline_str += "\ntime_per_storage: {:.3f}".format(time_per_storage)
+    multiline_str += "\ntime_per_retrieval: {:.3f}".format(time_per_retrieval)
+    multiline_str += "\nretrieval_time_for_existing_plans: {:.3f}".format(retrieval_time_for_existing_plans)
+    multiline_str += "\nretrieval_time_for_missing_plans: {:.3f}".format(retrieval_time_for_missing_plans)
+
+    singleline_str = ""
+    singleline_str += "{} ".format(partition_index)
+    singleline_str += "{} ".format(partition)
+    singleline_str += "{} ".format(num_relevant)
+    singleline_str += "{} ".format(num_retrieved)
+    singleline_str += "{} ".format(num_relevant_and_retrieved)
+    singleline_str += "{:.3f} ".format(precision)
+    singleline_str += "{:.3f} ".format(recall)
+    singleline_str += "{:.3f} ".format(f1)
+    singleline_str += "{:.3f} ".format(time_per_storage)
+    singleline_str += "{:.3f} ".format(time_per_retrieval)
+    singleline_str += "{:.3f} ".format(retrieval_time_for_existing_plans)
+    singleline_str += "{:.3f} ".format(retrieval_time_for_missing_plans)
 
     # Append singleline_str to ./output.txt
-    with open("output.txt", "a") as file:
+    with open(output_filename, "a") as file:
         file.write(singleline_str + "\n")
     return multiline_str + "\n" + singleline_str

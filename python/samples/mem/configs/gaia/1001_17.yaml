@@ -1,0 +1,73 @@
+
+PageLogger:
+  level: DEBUG  # DEBUG, INFO, WARNING, ERROR, CRITICAL, or NONE.
+  path: ./pagelogs/gaia/1001_17  # From the config settings below
+
+client:
+  model: gpt-4o-2024-08-06
+  provider: trapi  # openai, azure_openai, or trapi
+  # api_key: sk-  # only for openai
+  temperature: 0.8
+  max_completion_tokens: 4096
+  presence_penalty: 0.0
+  frequency_penalty: 0.0
+  top_p: 1.0
+  max_retries: 65535
+  ChatCompletionClientRecorder:  # Provides record & replay functionality
+    enabled: 0  # Only works for AssistantAgent currently
+    mode: replay  # record, replay, or pass to use the client without ChatCompletionClientRecorder
+    session_name: ./sessions/retrieval_2/session.json
+
+MemoryController:
+  generalize_task: 1          # -> config
+  revise_generalized_task: 0  # -> config
+  generate_topics: 0          # -> config
+  validate_memos: 1           # -> config
+  max_memos_to_retrieve: 1
+  MemoryBank:
+    path: ./memory_bank/retrieval_2
+    relevance_conversion_threshold: 1.7  # -> config
+    n_results: 25
+    distance_threshold: 100
+
+evaluations:
+  - eval_function:
+      function_name: eval_retrieval_2
+      module_path: ./eval_functions/eval_retrieval_2.py
+    runs:
+      - partition_index_filename: ./plan_retrieval/index.txt
+        partitions_filename: ./plan_retrieval/partitions.txt
+        output_filename: ./plan_retrieval/outputs/1001_17.txt  # From the config settings above
+        query_tasks:  # These are the original gaia task wordings.
+          - ./data_files/tasks/gaia/0.yaml
+          - ./data_files/tasks/gaia/1.yaml
+          - ./data_files/tasks/gaia/2.yaml
+          - ./data_files/tasks/gaia/3.yaml
+          - ./data_files/tasks/gaia/4.yaml
+          - ./data_files/tasks/gaia/5.yaml
+          - ./data_files/tasks/gaia/6.yaml
+          - ./data_files/tasks/gaia/7.yaml
+          - ./data_files/tasks/gaia/8.yaml
+          - ./data_files/tasks/gaia/9.yaml
+        tasks_to_store:  # These are reworded gaia tasks.
+          - ./data_files/tasks/gaia/0r.yaml
+          - ./data_files/tasks/gaia/1r.yaml
+          - ./data_files/tasks/gaia/2r.yaml
+          - ./data_files/tasks/gaia/3r.yaml
+          - ./data_files/tasks/gaia/4r.yaml
+          - ./data_files/tasks/gaia/5r.yaml
+          - ./data_files/tasks/gaia/6r.yaml
+          - ./data_files/tasks/gaia/7r.yaml
+          - ./data_files/tasks/gaia/8r.yaml
+          - ./data_files/tasks/gaia/9r.yaml
+        insights:  # These are webby plans for the reworded gaia tasks.
+          - ./data_files/insights/gaia_plans/0r.yaml
+          - ./data_files/insights/gaia_plans/1r.yaml
+          - ./data_files/insights/gaia_plans/2r.yaml
+          - ./data_files/insights/gaia_plans/3r.yaml
+          - ./data_files/insights/gaia_plans/4r.yaml
+          - ./data_files/insights/gaia_plans/5r.yaml
+          - ./data_files/insights/gaia_plans/6r.yaml
+          - ./data_files/insights/gaia_plans/7r.yaml
+          - ./data_files/insights/gaia_plans/8r.yaml
+          - ./data_files/insights/gaia_plans/9r.yaml
