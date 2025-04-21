@@ -121,6 +121,9 @@ class ClientCreator:
         elif model == "o3-mini":
             azure_deployment = "o3-mini_2025-01-31"
             model_version = "2025-01-31"
+        elif model == "o4-mini":
+            azure_deployment = "o4-mini_2025-04-16"
+            model_version = "2025-04-16"
         else:
             assert False, "Unsupported model"
         trapi_suffix = (
