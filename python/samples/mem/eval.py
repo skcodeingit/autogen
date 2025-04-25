@@ -73,11 +73,14 @@ async def perform_evaluations(config, logger) -> None:
 
         # Call the eval function for each listed run.
         for run_dict in evaluation_config["runs"]:
+            # Formact run_dict as an indented string for logging.
+            logger.info("\n\n" + "\n".join(["{}: {}".format(k, v) for k, v in run_dict.items()]))
             if apprentice is not None:
                 results = await eval_function(apprentice, client, logger, function_config, run_dict)
             else:
                 results = await eval_function(memory_controller, client, logger, function_config, run_dict)
             print(results)
+            logger.info(results)
 
     if hasattr(client, "finalize"):
         # If this is a client wrapper, it needs to be finalized.

@@ -13,11 +13,16 @@ class ClientCreator:
         # A few args are shared by all clients.
         args = {}
         args["model"] = self.config["model"]
-        args["max_completion_tokens"] = self.config["max_completion_tokens"]
-        args["max_retries"] = self.config["max_retries"]
 
         # The following args don't apply to the 'o1' family of models.
-        if not args["model"].startswith("o1"):
+        if args["model"].startswith("o"):
+            # Reasoning model.
+            # args["reasoning"] = self.config["reasoning"]
+            args["reasoning_effort"] = self.config["reasoning_effort"]
+        else:
+            # Not a reasoning model.
+            args["max_completion_tokens"] = self.config["max_completion_tokens"]
+            args["max_retries"] = self.config["max_retries"]
             args["temperature"] = self.config["temperature"]
             args["presence_penalty"] = self.config["presence_penalty"]
             args["frequency_penalty"] = self.config["frequency_penalty"]
@@ -37,6 +42,12 @@ class ClientCreator:
         # Log some details.
         self.logger.info("Client:  {}".format(client._resolved_model))
         self.logger.info(source)
+
+        # Convert the args dict to an indented string for logging.
+        args_str = "\n".join(
+            ["    {}: {}".format(k, v) for k, v in args.items() if k != "api_key"]
+        )
+        self.logger.info("  Client args:\n{}".format(args_str))
 
         # Check if the client should be wrapped.
         if "ChatCompletionClientRecorder" in self.config:
@@ -124,13 +135,16 @@ class ClientCreator:
         elif model == "o4-mini":
             azure_deployment = "o4-mini_2025-04-16"
             model_version = "2025-04-16"
+        elif model == "o4-mini-2025-04-16":
+            azure_deployment = "o4-mini_2025-04-16"
+            model_version = "2025-04-16"
         else:
             assert False, "Unsupported model"
         trapi_suffix = (
             "msraif/shared"  # This is TRAPISuffix (without /openai) in the table at https://aka.ms/trapi/models
         )
         endpoint = f"https://trapi.research.microsoft.com/{trapi_suffix}"
-        api_version = "2025-01-01-preview"  # From https://learn.microsoft.com/en-us/azure/ai-services/openai/api-version-deprecation#latest-ga-api-release
+        api_version = "2025-03-01-preview"  # From https://learn.microsoft.com/en-us/azure/ai-services/openai/api-version-deprecation#latest-ga-api-release
         args["azure_ad_token_provider"] = token_provider
         args["azure_deployment"] = azure_deployment
         if model == "o3-mini":

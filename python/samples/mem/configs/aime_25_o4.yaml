@@ -1,18 +1,12 @@
 
 PageLogger:
   level: DEBUG  # DEBUG, INFO, WARNING, ERROR, CRITICAL, or NONE.
-  path: ./pagelogs/aime/25/0/o4
+  path: ./pagelogs/aime/25/o4-low/trapi
 
 client:
-  model: gpt-4o-2024-08-06  # gpt-4o-2024-05-13, gpt-4o-2024-08-06, gpt-4o-2024-11-20, o1-preview, o1, etc.
+  model: o4-mini-2025-04-16  # gpt-4o-2024-05-13, gpt-4o-2024-08-06, gpt-4o-2024-11-20, o1-preview, o1, etc.
   provider: trapi  # openai, azure_openai, or trapi
-  # api_key: sk-  # only for openai
-  temperature: 0.8
-  max_completion_tokens: 4096
-  presence_penalty: 0.0
-  frequency_penalty: 0.0
-  top_p: 1.0
-  max_retries: 65535
+  reasoning_effort: "low"  # low, medium, high
 
 Apprentice:
   name_of_agent_or_team: AssistantAgent  # AssistantAgent or MagenticOneGroupChat
@@ -30,6 +24,20 @@ evaluations:
   - eval_function:
       function_name: eval_without_learning
       module_path: ./eval_functions/eval_without_learning.py
-      num_trials: 1  # 1-10
+      num_trials: 5  # 1-10
     runs:
       - task_file: data_files/tasks/aime/25/0/9.yaml
+      - task_file: data_files/tasks/aime/25/0/12.yaml
+      - task_file: data_files/tasks/aime/25/0/13.yaml
+      - task_file: data_files/tasks/aime/25/0/14.yaml
+      - task_file: data_files/tasks/aime/25/0/23.yaml
+      - task_file: data_files/tasks/aime/25/0/27.yaml
+
+      - task_file: data_files/tasks/aime/25/1/19.yaml
+
+      - task_file: data_files/tasks/aime/25/2/1.yaml
+      - task_file: data_files/tasks/aime/25/2/8.yaml
+
+      - task_file: data_files/tasks/aime/25/3/11.yaml
+      - task_file: data_files/tasks/aime/25/3/28.yaml
+      - task_file: data_files/tasks/aime/25/3/29.yaml
