@@ -1,0 +1,7 @@
+task_description: "Consider a $9\times3$ table containing symbols $A$ through $I$. Each row contains each of the nine symbols exactly once. Furthermore, when the table is divided into three, non-overlapping, $3\times3$ blocks, each block itself contains all 9 unique symbols, like this:
+ | B | I | G | F | A | C | H | E | D | 
+ | C | E | F | D | I | H | A | G | B | 
+ | D | A | H | G | B | E | F | I | C | 
+Now consider the total number of different ways that the table could be filled according to these constraints. Assume that it could be written as the product of 4 distinct prime numbers raised to positive integer powers, such as $w^a\cdot x^b\cdot y^c\cdot z^d$. Calculate the sum of these 8 integers."
+
+expected_answer: '46'

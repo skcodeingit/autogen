@@ -1,0 +1,8 @@
+insight: "First one shows (by fixing the first‐row permutation and then counting the band–completions) that the total number of valid 3×9 fillings is
+
+N = 9! · 56 · (3!)^6
+  = 2^16 · 3^10 · 5^1 · 7^2.
+
+Thus the four primes are 2,3,5,7 with exponents 16,10,1,2.  Their sum is
+
+2 + 3 + 5 + 7 + 16 + 10 + 1 + 2  = 46."
