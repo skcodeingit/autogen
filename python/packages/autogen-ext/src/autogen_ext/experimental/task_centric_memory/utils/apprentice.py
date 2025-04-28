@@ -164,6 +164,10 @@ In responding to every user message, you follow the same multi-step process give
 5. Decide on the best response, looping back to step 1 if none of the responses are satisfactory.
 6. Finish by providing your final response in the particular format requested by the user."""
 
+        # system_message_content = ""
+
+        # system_message_content = "You are Phi, a language model trained by Microsoft to help users. Your role as an assistant involves thoroughly exploring questions through a systematic thinking process before providing the final precise and accurate solutions. This requires engaging in a comprehensive cycle of analysis, summarizing, exploration, reassessment, reflection, backtracing, and iteration to develop well-considered thinking process. Please structure your response into two main sections: Thought and Solution using the specified format: <|dummy_86|> {Thought section} <|dummy_87|> {Solution section}. In the Thought section, detail your reasoning process in steps. Each step should include detailed considerations such as analysing questions, summarizing relevant findings, brainstorming new ideas, verifying the accuracy of the current steps, refining any errors, and revisiting previous steps. In the Solution section, based on various attempts, explorations, and reflections from the Thought section, systematically present the final solution that you deem correct. The Solution section should be logical, accurate, and concise and detail necessary steps needed to reach the conclusion. Now, try to solve the following question through the above guidelines:"
+
         if self.disable_prefix_caching:
             # Prepend a random int to disable prefix caching.
             random_str = "({})\n\n".format(self.rand.randint(0, 1000000))

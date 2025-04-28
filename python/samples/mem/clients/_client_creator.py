@@ -1,3 +1,4 @@
+import os
 from autogen_ext.models.openai import AzureOpenAIChatCompletionClient, OpenAIChatCompletionClient
 from azure.identity import AzureCliCredential, ChainedTokenCredential, DefaultAzureCredential, get_bearer_token_provider
 
@@ -36,6 +37,8 @@ class ClientCreator:
             client, source = self.create_aoai_client(args)
         elif provider == "trapi":
             client, source = self.create_trapi_client(args)
+        elif provider == "phi":
+            client, source = self.create_phi_client(args)
         else:
             assert False, "Invalid client provider"
 
@@ -125,6 +128,8 @@ class ClientCreator:
             azure_deployment = "gpt-4o_2024-05-13"
         elif model == "gpt-4o-2024-11-20":
             azure_deployment = "gpt-4o_2024-11-20"
+        elif model == "gpt-4.1-2025-04-14":
+            azure_deployment = "gpt-4.1_2025-04-14"
         elif model == "o1-preview":
             azure_deployment = "o1-preview_2024-09-12"
         elif model == "o1":
@@ -153,3 +158,17 @@ class ClientCreator:
         args["api_version"] = api_version
         client = AzureOpenAIChatCompletionClient(**args)
         return client, "  created through TRAPI"
+
+    def create_phi_client(self, args):
+        args["api_key"] = os.getenv("PHYAGI_API_KEY")
+        args["base_url"] = "https://gateway.phyagi.net/api"
+        args["model_info"] = {
+            "vision": False,
+            "function_calling": False,
+            "json_output": False,
+            "family": "phi",
+            "structured_output": False,
+            "multiple_system_messages": False,
+        }
+        client = OpenAIChatCompletionClient(**args)
+        return client, "  created through Azure OpenAI"
