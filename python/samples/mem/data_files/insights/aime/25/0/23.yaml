@@ -1,0 +1,35 @@
+insight: "Given f(x) = sin(7π · sin(5x))
+
+Zeros occur when
+  7π · sin(5x) = kπ
+⇒ sin(5x) = k/7,    |k| ≤ 7,   k ∈ ℤ
+
+Set θ = 5x,    so θ ∈ (0, 10π).  
+We count solutions of sin θ = k/7 on (0, 10π) for k = –7, –6, …, 6, 7.
+
+1)  k = ±7  ⇒  sin θ = ±1.  
+    One solution per 2π, and (0, 10π) contains 5 full periods ⇒ 5 solutions for k = +7 and 5 for k = –7.
+
+2)  k = 0  ⇒  sin θ = 0  
+    ⇒ θ = m·π,   0 < m·π < 10π  ⇒  m = 1, 2, …, 9  ⇒  9 solutions.
+
+3)  k = ±1, ±2, ±3, ±4, ±5, ±6  (12 values)  
+    For each c = k/7 with |c|<1, sin θ = c has 2 solutions per 2π  
+    ⇒ 5·2 = 10 solutions each ⇒ total 12·10 = 120.
+
+So the total number of zeros is  
+n = 5 + 5 + 9 + 120 = 139.
+
+Next: tangent-zeros are those zeros x₀ for which f′(x₀)=0 as well.  One finds
+
+f′(x) = 35π · cos(5x) · cos(7π · sin(5x)).
+
+At any zero of f, sin(7π·sin(5x))=0 ⇒ cos(7π·sin(5x))=±1≠0, so
+
+f′(x₀)=0  ⇔  cos(5x₀)=0  
+⇔ 5x₀ = (2n+1)(π/2),   n = 0,1,…,9.
+
+There are 10 such points in (0, 2π), so t = 10.
+
+Therefore  
+n + t = 139 + 10 = 149."
